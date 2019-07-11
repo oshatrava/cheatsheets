@@ -42,6 +42,7 @@ const second = createEvent('event name')
 ```
 
 ### Subscribe to event updates
+{: .-prime}
 
 ```js
 import { createEvent } from 'effector'
@@ -75,11 +76,6 @@ event("nothing")
 ### Map arguments of event to another event
 
 ```js
-import { createEvent } from 'effector'
-```
-{: .-setup}
-
-```js
 const event = createEvent()
 
 // data is an Event
@@ -97,11 +93,6 @@ event({ data: "Hello world" }) // Hello world
 [Try in playground](https://share.effector.dev/aLDDZRtx)
 
 ### Filter event updates
-
-```js
-import { createEvent } from 'effector'
-```
-{: .-setup}
 
 ```js
 const number = createEvent()
@@ -123,11 +114,6 @@ number(-1)
 [Try in playground](https://share.effector.dev/eqhvLcrK)
 
 ### Filter event by undefined
-
-```js
-import { createEvent } from 'effector'
-```
-{: .-setup}
 
 ```js
 const formChanged = createEvent()
@@ -169,5 +155,109 @@ sortDESC("lastName") // { field: "lastName", dir: "DESC" }
 Creates a new event which call original events with modified payload.
 
 [Try in playground](https://share.effector.dev/QOtuWSAK)
+
+Store
+----------
+{: .-three-column}
+
+### Create and update store
+{: .-prime}
+
+```js
+import {
+  createEvent,
+  createStore
+} from 'effector'
+```
+{: .-setup}
+
+```js
+// initial value — 0
+const $counter = createStore(0)
+const increment = createEvent()
+
+$counter.on(increment,
+  (state) => state + 1)
+
+$counter.watch(console.log) // 0
+
+increment() // 1
+increment() // 2
+```
+{: data-line="6,8"}
+
+Store watcher called immediately after creation.
+All watchers called after all stores is updated.
+
+[Try in playground](https://share.effector.dev/UyF9kUf4)
+
+### Handle just updates of store
+
+```js
+// initial value — 0
+const $counter = createStore(0)
+const increment = createEvent()
+
+$counter.on(increment,
+  (state) => state + 1)
+
+$counter.updates.watch(console.log)
+
+increment() // 1
+increment() // 2
+```
+{: data-line="8"}
+
+`updates` called only on store updates.
+
+[Try in playground](https://share.effector.dev/7hbJQ73h)
+
+### Reset store to initial value
+
+```js
+// initial value — 0
+const $counter = createStore(0)
+
+const increment = createEvent()
+const reset = createEvent()
+
+$counter
+  .on(increment, (state) => state + 1)
+  .reset(reset)
+
+$counter.watch(console.log) // 0
+
+increment() // 1
+increment() // 2
+reset() // 0
+```
+{: data-line="5,9"}
+
+[Try in playground](https://share.effector.dev/PN2BBuad)
+
+### Map one store to another
+
+Derived store
+
+```js
+const $title = createStore('')
+const changed = createEvent()
+
+const $length = $title
+  .map(title => title.length)
+
+$title.on(changed, (_, title) => title)
+
+$length.watch(console.log) // 0
+
+changed("hello") // 5
+changed("world")
+changed("hello world") // 11
+```
+{: data-line="5"}
+
+It will call a provided function with the state, when the original store updates, and will use the result to update the derived store
+
+[Try in playground](https://share.effector.dev/EZZbKUW9)
 
 {%endraw%}
