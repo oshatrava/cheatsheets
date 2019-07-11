@@ -83,13 +83,14 @@ import { createEvent } from 'effector'
 const event = createEvent()
 
 // data is an Event
-const data = event.map((message) => message.data)
+const data = event
+  .map((message) => message.data)
 
 data.watch(console.log)
 
 event({ data: "Hello world" }) // Hello world
 ```
-{: data-line="4"}
+{: data-line="5"}
 
 Сreates a new event, which will be called after the original event is called, applying the result of a fn as a payload.
 
@@ -103,17 +104,17 @@ import { createEvent } from 'effector'
 {: .-setup}
 
 ```js
-const numberReceived = createEvent()
+const number = createEvent()
 
-const positiveNumberReceived = numberReceived.filter({
+const positiveNumber = number.filter({
   fn: (number) => number > 0,
 })
 
-positiveNumberReceived.watch(console.log)
+positiveNumber.watch(console.log)
 
-numberReceived(0)
-numberReceived(2) // 2
-numberReceived(-1)
+number(0)
+number(2) // 2
+number(-1)
 ```
 {: data-line="3,4,5"}
 
@@ -135,11 +136,11 @@ const userSelected = formChanged.filterMap(
   (form) => form.user,
 )
 
-userSelected.watch((user) => console.log("user", user))
+userSelected.watch(console.log)
 
 formChanged({ field: 1 })
-formChanged({ field: 1, user: "name" }) // user name
-formChanged({ field: 1, user: null }) // user null
+formChanged({ field: 1, user: "name" }) // name
+formChanged({ field: 1, user: null }) // null
 ```
 {: data-line="3,4,5"}
 
@@ -152,15 +153,18 @@ formChanged({ field: 1, user: null }) // user null
 ```js
 const sortEvent = createEvent()
 
-const sortASC = sortEvent.prepend((field) => ({ field, dir: "ASC" }))
-const sortDESC = sortEvent.prepend((field) => ({ field, dir: "DESC" }))
+const sortASC = sortEvent
+  .prepend((field) => ({ field, dir: "ASC" }))
+
+const sortDESC = sortEvent
+  .prepend((field) => ({ field, dir: "DESC" }))
 
 sortEvent.watch(console.log)
 
 sortASC("firstName") // { field: "firstName", dir: "ASC" }
 sortDESC("lastName") // { field: "lastName", dir: "DESC" }
 ```
-{: data-line="3,4,5"}
+{: data-line="3,4,6,7"}
 
 Creates a new event which call original events with modified payload.
 
