@@ -21,6 +21,84 @@ intro: |
 
 {%raw%}
 
+Initial
+----------
+{: .-three-column}
+
+### Introduction
+
+```js
+const increment = createEvent()
+const decrement = createEvent()
+const resetCounter = createEvent()
+
+const $counter = createStore(0)
+  .on(increment, (state) => state + 1)
+  .on(decrement, (state) => state - 1)
+  .reset(resetCounter)
+
+$counter.watch(console.log)
+
+increment() // 1
+decrement() // 0
+```
+
+### Effects
+
+```js
+const getUser = createEffect()
+
+getUser.use((params) =>
+  fetch(`https://example.com/get-user/${params.id}`)
+    .then((res) => res.json())
+)
+
+const $users = createStore([])
+  .on(getUser.done,
+    (state, { result: user }) => [...state, user])
+
+getUser.done.watch(({ result, params }) => {
+  console.log(params) // {id: 1}
+  console.log(result) // resolved value
+})
+
+getUser.fail.watch(({ error, params }) => {
+  console.error(params) // {id: 1}
+  console.error(error) // rejected value
+})
+```
+
+### Extras
+
+#### store objects
+
+```js
+const $balance = createStore(0)
+const $username = createStore("zerobias")
+
+const $root = createStoreObject({
+  balance: $balance, username: $username
+})
+
+$root.watch(console.log)
+// { balance: 0, username: "zerobias" }
+```
+
+#### combine stores
+
+```js
+const $balance = createStore(1000)
+const $username = createStore("zerobias")
+
+const $greeting = combine($balance, $username,
+  (balance, username) =>
+    `Hello, ${username}. Your balance is ${balance}`
+)
+
+$greeting.watch(console.log)
+// Hello, zerobias. Your balance is 1000
+```
+
 Event
 ----------
 {: .-three-column}
